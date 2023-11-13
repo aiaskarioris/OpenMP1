@@ -3,6 +3,8 @@
 #include <string.h>
 #include <omp.h>
 
+// Loads the test file specified by _test_no, returning the files's data
+// in N (matrix dimension), A (matrix data) and the DDM flag.
 int loadTest(unsigned int _test_no, unsigned long *N, int **A, char *flag){
 	FILE *fp;
 	char filename[13];
@@ -31,7 +33,6 @@ int loadTest(unsigned int _test_no, unsigned long *N, int **A, char *flag){
 		return 1000;
 	}
 	fclose(fp);
-	
 	return 0;
 }
 
@@ -41,6 +42,7 @@ int main(int argc, char **argv){
 	unsigned long N;
 	int *A;
 	
+	// Exit if argc!=2
 	if(argc == 2){
 		// Open and load file
 		test_no = atoi(argv[1]);
@@ -60,6 +62,8 @@ int main(int argc, char **argv){
 		unsigned int P; // Number of threads
 		
 		timer[0] = omp_get_wtime();
+
+		// Execute the following block in parallel
 		#pragma omp parallel shared(N, A, result) private(sum_local, i, o)
 		{
 			#pragma omp single
@@ -67,9 +71,9 @@ int main(int argc, char **argv){
 				// Start timer and print diagnostic information
 				P = omp_get_num_threads();
 				printf("Threads: %d\n\n", P);
-				
 			}
 			
+			// Split lines to threads
 			#pragma omp for schedule(static, 1)
 			for(i = 0; i < N; i++){ // For each line a thread gets...
 				sum_local = 0;
@@ -100,6 +104,8 @@ int main(int argc, char **argv){
 		int *D = malloc(sizeof(int)*N); // Array with diagonal numbers
 		
 		timer[2] = omp_get_wtime();
+
+		// Execute in parallel
 		#pragma omp parallel shared(N, A, D, m) private(i)
 		{
 			// Fill D with A[i,i]
@@ -127,15 +133,19 @@ int main(int argc, char **argv){
 		int *B = malloc(sizeof(int)*N*N);
 		
 		timer[4] = omp_get_wtime();
+
+		// Execute in parallel, again
 		#pragma omp parallel shared(N, A, B, m) private(i)
 		{
+			// Fill B matrix with the differences
 			#pragma omp for schedule(static, 1)
-			for(i = 0; i < N*N; i++){ // Fill B matrix with the differences
+			for(i = 0; i < N*N; i++){
 				B[i] = m - abs(A[i]);
 			}
 			
+			// Replace numbers of the diagonal
 			#pragma omp for schedule(static, 1)
-			for(i = 0; i < N; i++){ // Replace numbers of the diagonal
+			for(i = 0; i < N; i++){
 				B[i*N+i] = m;
 			}
 		}
