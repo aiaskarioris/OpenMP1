@@ -1,8 +1,8 @@
 # OpenMP Project
-This is a project for the Parallel Systems course provided by the Department of Informatics and Computer Engineering, in University of W. Attica. It is written in C and uses the **OpenMP library**.
+This is a project for the Parallel Systems course provided by the Department of Informatics and Computer Engineering, in University of West Attica. It is written in C and uses the **OpenMP library**.
 
 ## Abstract
-This exercise works on Diagonally Dominant Matrices (DDM), that is square matrices where each element of the diagonal is greater than the sum of all the non-diagonal elements of its row.
+This exercise works on Diagonally Dominant Matrices (DDM).
 
 The exercise is split into four parts where in each part the goal is achieved using parallel computations provided by the OpenMP library. The four parts are:
  - Part A: Determine if the input matrix is diagonally dominant
@@ -17,7 +17,28 @@ This project was developed and tested in Ubuntu 22.04 with the use of a virtual 
 
 ---
 
-# The Project itself
+# Results
+The average time needed for the various program versions to complete is shown on the graphs below.
+## 16M Numbers
+
+<p align="center">
+ <image src="https://github.com/aiaskarioris/OpenMP1/blob/main/pictures/16M_graph.jpg" alt="16M Numbers"></image>
+</p>
+
+## 236M Numbers
+<p align="center">
+ <image src="https://github.com/aiaskarioris/OpenMP1/blob/main/pictures/236M_graph.jpg" alt="236M"></image>
+</p>
+
+## Execution time for input matrix size
+<p align="center">
+ <image src="https://github.com/aiaskarioris/OpenMP1/blob/main/pictures/time_for_input_size.JPG" alt="Exec. Time to Input Size"></image>
+ <i>All tests executed with 4 threads.</i>
+</p>
+
+---
+
+# Details
 In the following paragraphs the way the program works is explained in detail, as well as the ideas behind the code. A PDF version of the following is also provided, albeit written in Greek.
 
 ## Source Code
@@ -69,25 +90,6 @@ This version uses a binary tree algorithm to find the minimum. This is done by h
 The lines of the matrix are distributed to the threads and each thread computes the "local minimum" of the data it received. If the number of threads is a power of 2 then the next part of the algorithm can start. If the number of threads isn't appropriate (such as if there are 3 threads) the excess threads will compare local minimums with the others threads in this step so that they won't take part in the binary tree. The binary-tree portion of the algorithm consists of a few *steps* where all threads must take part so that they can execute the *barrier* directive. However, as *step* decreases with each loop, less and less threads execute comparisons.
 
 See the [source code](https://github.com/aiaskarioris/OpenMP1/blob/main/source/ex1_d2_2.c) for implementation details.
-
-# Results
-The average time needed for the various program versions to complete is shown on the graphs below.
-## 16M Numbers
-
-<p align="center">
- <image src="https://github.com/aiaskarioris/OpenMP1/blob/main/pictures/16M_graph.jpg" alt="16M Numbers"></image>
-</p>
-
-## 236M Numbers
-<p align="center">
- <image src="https://github.com/aiaskarioris/OpenMP1/blob/main/pictures/236M_graph.jpg" alt="236M"></image>
-</p>
-
-## Execution time for input matrix size
-<p align="center">
- <image src="https://github.com/aiaskarioris/OpenMP1/blob/main/pictures/time_for_input_size.JPG" alt="Exec. Time to Input Size"></image>
- <i>All tests executed with 4 threads.</i>
-</p>
 
 
 
